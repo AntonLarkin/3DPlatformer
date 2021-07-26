@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +6,8 @@ public class UiManager : MonoBehaviour
 {
 
     [SerializeField] private GameObject gameOverView;
+
+    public static event Action OnRestartButton;
 
     private void OnEnable()
     {
@@ -17,9 +19,11 @@ public class UiManager : MonoBehaviour
         GameOver.OnGameOver -= GameOver_OnGameOver;
     }
 
-    public void OnRestartButtonClicked()
+    public void ClickRestartButton()
     {
         gameOverView.SetActive(false);
+
+        OnRestartButton?.Invoke();
     }
 
     private void GameOver_OnGameOver()

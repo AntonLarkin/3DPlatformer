@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using DG.Tweening;
 
 public class Gem : MonoBehaviour
@@ -7,7 +8,12 @@ public class Gem : MonoBehaviour
     [SerializeField] private float liftTime;
     [SerializeField] private float rotationSpeed;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip collectedAudioClip;
+    [SerializeField] private AudioSource audioSource;
+
     private Vector3 startPosition;
+
 
     private void Awake()
     {
@@ -38,7 +44,9 @@ public class Gem : MonoBehaviour
 
     private void CollectGem()
     {
-        Destroy(gameObject);
+        audioSource.PlayOneShot(collectedAudioClip);
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        StartCoroutine(OnCollect());
     }
 
     private void Rotate()
@@ -46,6 +54,10 @@ public class Gem : MonoBehaviour
         transform.Rotate(0, rotationSpeed * Time.deltaTime, 0 );
     }
 
-
+    private IEnumerator OnCollect()
+    {
+        yield return new WaitForSeconds(1f);
+        gameObject.SetActive(false);
+    }
 
 }

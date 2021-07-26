@@ -9,6 +9,10 @@ public class MovableObject : MonoBehaviour
     [SerializeField] private float liftTime;
     [SerializeField] private bool isNeedToBeReturned;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip moveAudioClip;
+    [SerializeField] private AudioSource audioSource;
+
     public Vector3 EndPosition => endPosition;
     public Vector3 StartPosition => startPosition;
     public bool IsNeedToBeReturned => isNeedToBeReturned;
@@ -28,7 +32,9 @@ public class MovableObject : MonoBehaviour
     }
 
     public void LiftBox(Vector3 position)
-    {    
+    {
+        audioSource.PlayOneShot(moveAudioClip);
+
         Sequence sequence = DOTween.Sequence();
         sequence.AppendInterval(timeDelay);
         transform.DOShakePosition(timeDelay,0.2f,90);

@@ -8,6 +8,8 @@ public class Platform : MonoBehaviour
     [SerializeField] private float reloadTime;
     [SerializeField] private Vector3 endPosition;
     [SerializeField] private float liftTime;
+    [SerializeField] private float vibrationStrength;
+    [SerializeField] private int vibrationRandomness;
 
     private Vector3 startPosition;
     private bool isTaken;
@@ -22,7 +24,7 @@ public class Platform : MonoBehaviour
         if (other.CompareTag(Tags.Player))
         {
             isTaken = true;
-            StartCoroutine(OnPlatformLeave());
+            //StartCoroutine(OnPlatformLeave());
             DropPlatform();
         }
     }
@@ -39,7 +41,7 @@ public class Platform : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
         sequence.AppendInterval(timeDelay);
-        transform.DOShakePosition(timeDelay, 0.05f, 20);
+        transform.DOShakePosition(timeDelay, vibrationStrength, vibrationRandomness);
 
         sequence.Append(transform.DOLocalMove(endPosition, liftTime));
         sequence.AppendInterval(reloadTime);

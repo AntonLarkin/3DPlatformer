@@ -6,6 +6,10 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private ParticleSystem deathParticle;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip deathAudioClip;
+    [SerializeField] private AudioSource audioSource;
+
     private bool isPlayerDead;
 
     public bool IsPlayerDead => isPlayerDead;
@@ -21,29 +25,42 @@ public class Player : MonoBehaviour
     private void OnEnable()
     {
         GameOver.OnGameOver += GameOver_OnGameOver;
+        UiManager.OnRestartButton += UiManager_OnRestartButton;
     }
 
     private void OnDisable()
     {
         GameOver.OnGameOver -= GameOver_OnGameOver;
+        UiManager.OnRestartButton -= UiManager_OnRestartButton;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(Tags.Ground))
+        {
+            SetPlayerDead();
+        }
     }
 
     public void SetPlayerDead()
     {
+        audioSource.PlayOneShot(deathAudioClip);
         isPlayerDead = true;
         Instantiate(deathParticle,transform);
-        transform.position = startPosition;
     }
 
     private void GameOver_OnGameOver()
     {
-        StartCoroutine(OnDead());
+        if (isPlayerDead)
+        {
+            transform.position = startPosition;
+        }
     }
 
-    private IEnumerator OnDead()
+    private void UiManager_OnRestartButton()
     {
-        yield return new WaitForSeconds(1f);        
         isPlayerDead = false;
     }
+
 
 }

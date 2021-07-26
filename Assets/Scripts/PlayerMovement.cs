@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private GameObject playerModel;
     [SerializeField] private CharacterController characterController;
     [SerializeField] private float speed;
 
@@ -40,6 +41,16 @@ public class PlayerMovement : MonoBehaviour
         gravityDirection = Vector3.down;
     }
 
+    private void OnEnable()
+    {
+        UiManager.OnRestartButton += UiManager_OnRestartButton;
+    }
+
+    private void OnDisable()
+    {
+        UiManager.OnRestartButton -= UiManager_OnRestartButton;
+    }
+
     private void Update()
     {
         if (!player.IsPlayerDead)
@@ -52,6 +63,10 @@ public class PlayerMovement : MonoBehaviour
 
             CalculateGravity();
             Rotate();
+        }
+        else
+        {
+            Die();
         }
     }
 
@@ -93,6 +108,11 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, xRot, 0f);
     }
 
+    private void Die()
+    {
+        playerModel.SetActive(false);
+    }
+
     private void Jump()
     {
         playerVelocity.y += Mathf.Sqrt(speed * gravity);
@@ -116,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        gravityMovement = gravityDirection * -currentGravity *5f* Time.deltaTime;
+        gravityMovement = gravityDirection * -currentGravity *10f* Time.deltaTime;
     }
 
     private bool IsGrounded()
@@ -128,5 +148,10 @@ public class PlayerMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         Jump();
+    }
+
+    private void UiManager_OnRestartButton()
+    {
+        playerModel.SetActive(true);
     }
 }

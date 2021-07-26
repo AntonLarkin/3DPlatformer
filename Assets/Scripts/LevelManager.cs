@@ -2,40 +2,69 @@ using UnityEngine;
 
 public class LevelManager : SingletonMonoBehaviour<LevelManager>
 {
-    [SerializeField] private Gem[] gems;
-
+    private Gem[] gems;
     private Portal portal;
+    private bool isPortalActive;
 
-    protected override void Awake()
+    [Header("Audio")]
+    [SerializeField] private AudioClip activatePortalAudioClip;
+    [SerializeField] private AudioSource audioSource;
+
+    private void Start()
     {
-        base.Awake();
-
-        portal = FindObjectOfType<Portal>();
-        portal.GetComponent<Portal>().gameObject.SetActive(false);
+        ReactivatePortal();
     }
+
+    private void OnEnable()
+    {
+        UiManager.OnRestartButton += UiManager_OnRestartButton;
+    }
+
+    private void OnDisable()
+    {
+        UiManager.OnRestartButton -= UiManager_OnRestartButton;
+    }
+
 
     private void Update()
     {
+        FindGems();
         CheckForGems();
+        if (isPortalActive&&gems.Length>0)
+        {
+            ReactivatePortal();
+        }
+    }
+
+    private void SetPortalActive(bool isActive)
+    {
+        portal.GetComponent<Portal>().gameObject.SetActive(isActive);
+        isPortalActive = isActive;
+    }
+
+    private void FindGems()
+    {
+        gems = FindObjectsOfType<Gem>();
     }
 
     private void CheckForGems()
     {
-        for(int i = 0; i < gems.Length; i++)
+        if (gems.Length==0)
         {
-            if (gems[i])
-            {
-                return;
-            }
-            else if(!gems[i])
-            {
-                if (i == gems.Length-1)
-                {
-                    portal.GetComponent<Portal>().gameObject.SetActive(true);
-                }
-                continue;
-            }
+            audioSource.PlayOneShot(activatePortalAudioClip);
+            SetPortalActive(true);
         }
+    }
+
+    private void ReactivatePortal()
+    {
+        portal = FindObjectOfType<Portal>();
+        SetPortalActive(false);
+    }
+
+    private void UiManager_OnRestartButton()
+    {
+
     }
 
 }

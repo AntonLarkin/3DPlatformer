@@ -9,6 +9,10 @@ public class ButtonToMoveObjects : MonoBehaviour
     [SerializeField] private float liftTime;
     [SerializeField] private Vector3 startPosition;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip activateButtonAudioClip;
+    [SerializeField] private AudioSource audioSource;
+
     private void Awake()
     {
         startPosition = transform.position;
@@ -17,12 +21,14 @@ public class ButtonToMoveObjects : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         MovePressedButton(endPosition);
+        audioSource.PlayOneShot(activateButtonAudioClip);
         obstacle.LiftBox(obstacle.EndPosition);
     }
 
     private void OnTriggerExit(Collider other)
     {
         MovePressedButton(startPosition);
+        audioSource.PlayOneShot(activateButtonAudioClip);
         if (obstacle.IsNeedToBeReturned)
         {
             StartCoroutine(OnLeavingButton());

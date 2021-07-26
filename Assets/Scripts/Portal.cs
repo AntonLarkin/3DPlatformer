@@ -3,6 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class Portal : MonoBehaviour
 {
+    private LevelManager levelManager;
+
+    private void Start()
+    {
+        levelManager = FindObjectOfType<LevelManager>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Player))
@@ -10,5 +17,4 @@ public class Portal : MonoBehaviour
             SceneManager.LoadScene(1);
         }
     }
-
 }
