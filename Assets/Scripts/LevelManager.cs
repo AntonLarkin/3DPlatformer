@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
+using DG.Tweening;
 
 public class LevelManager : SingletonMonoBehaviour<LevelManager>
 {
     private Gem[] gems;
+    private float gemsCount;
     private Portal portal;
     private bool isPortalActive;
 
@@ -10,29 +13,32 @@ public class LevelManager : SingletonMonoBehaviour<LevelManager>
     [SerializeField] private AudioClip activatePortalAudioClip;
     [SerializeField] private AudioSource audioSource;
 
-    private void Start()
-    {
-        ReactivatePortal();
-    }
-
     private void OnEnable()
     {
-        UiManager.OnRestartButton += UiManager_OnRestartButton;
+        Gem.OnCreated += Gem_OnCreated;
+        Gem.OnCollected += Gem_OnCollected;
+        GameOver.OnGameOver += GameOver_OnGameOver;
     }
 
     private void OnDisable()
     {
-        UiManager.OnRestartButton -= UiManager_OnRestartButton;
+        Gem.OnCreated -= Gem_OnCreated;
+        Gem.OnCollected -= Gem_OnCollected;
+        GameOver.OnGameOver -= GameOver_OnGameOver;
     }
 
+    private void Start()
+    {
+        ReactivatePortal();
+        FindGems();
+
+    }
 
     private void Update()
     {
-        FindGems();
-        CheckForGems();
-        if (isPortalActive&&gems.Length>0)
+        if (gemsCount == 0)
         {
-            ReactivatePortal();
+            ActivateFinishPortal();
         }
     }
 
@@ -47,13 +53,11 @@ public class LevelManager : SingletonMonoBehaviour<LevelManager>
         gems = FindObjectsOfType<Gem>();
     }
 
-    private void CheckForGems()
+    private void ActivateFinishPortal()
     {
-        if (gems.Length==0)
-        {
-            audioSource.PlayOneShot(activatePortalAudioClip);
-            SetPortalActive(true);
-        }
+        audioSource.PlayOneShot(activatePortalAudioClip);
+        SetPortalActive(true);
+
     }
 
     private void ReactivatePortal()
@@ -62,9 +66,24 @@ public class LevelManager : SingletonMonoBehaviour<LevelManager>
         SetPortalActive(false);
     }
 
-    private void UiManager_OnRestartButton()
+    private void Gem_OnCreated()
     {
-
+        gemsCount++;
     }
 
+    private void Gem_OnCollected()
+    {
+        gemsCount--;
+    }
+
+    private void GameOver_OnGameOver()
+    {
+        gemsCount = gems.Length;
+        for(int i = 0; i < gems.Length; i++)
+        {
+            gems[i].gameObject.SetActive(true);
+
+        }
+        SetPortalActive(false);
+    }
 }

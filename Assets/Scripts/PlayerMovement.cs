@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float currentGravity;
     [SerializeField] private float maxGravity;
     [SerializeField] private float constantGravity;
+    [SerializeField] private float gravityScale;
     private Vector3 gravityDirection;
     private Vector3 gravityMovement;
     private Vector3 playerVelocity;
@@ -53,28 +54,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (player.IsPaused||player.IsBusy)
+        {
+            return;
+        }
+
         if (!player.IsPlayerDead)
         {
-            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
-            {
-                animator.SetTrigger(jumpTriggerName);
-                StartCoroutine(OnJump());
-            }
-
             CalculateGravity();
+            Move();
             Rotate();
         }
-        else
+        else if (player.IsPlayerDead)
         {
             Die();
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (!player.IsPlayerDead)
-        {
-            Move();
         }
     }
 
@@ -98,7 +91,25 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat(moveSpeedName, 0f);
         }
 
-        characterController.Move(moveDirection * (speed * Time.deltaTime)+gravityMovement);
+        var moveDelta = moveDirection * (speed * Time.deltaTime);
+
+        if (characterController.isGrounded)
+        {
+            currentGravity = constantGravity;
+
+            if (Input.GetButtonDown("Jump"))
+            {
+                currentGravity = jumpHeight;
+                animator.SetTrigger(jumpTriggerName);
+                Jump();
+            }
+        }
+        else
+        {
+            currentGravity += Physics.gravity.y * gravityScale * Time.deltaTime;
+        }
+        moveDelta.y = currentGravity;
+        characterController.Move(moveDelta);
     }
 
     private void Rotate()
@@ -119,7 +130,6 @@ public class PlayerMovement : MonoBehaviour
 
         playerVelocity.y += gravity;
         characterController.Move(playerVelocity * jumpHeight * Time.deltaTime);
-        playerVelocity.y = 0;
     }
 
     private void CalculateGravity()
@@ -136,11 +146,12 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        gravityMovement = gravityDirection * -currentGravity *10f* Time.deltaTime;
+        gravityMovement = gravityDirection * -currentGravity * 10f * Time.deltaTime;
     }
 
     private bool IsGrounded()
     {
+        playerVelocity.y = 0;
         return characterController.isGrounded;
     }
 

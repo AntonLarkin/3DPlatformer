@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using DG.Tweening;
 
@@ -14,6 +15,8 @@ public class Gem : MonoBehaviour
 
     private Vector3 startPosition;
 
+    public static event Action OnCreated;
+    public static event Action OnCollected; 
 
     private void Awake()
     {
@@ -22,11 +25,9 @@ public class Gem : MonoBehaviour
 
     private void Start()
     {
-        Sequence sequence = DOTween.Sequence();
+        AnimateGem();
 
-        sequence.Append(transform.DOLocalMove(endPosition, liftTime));
-        sequence.Append(transform.DOLocalMove(startPosition, liftTime));
-        sequence.SetLoops(-1);
+        OnCreated?.Invoke();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -46,7 +47,9 @@ public class Gem : MonoBehaviour
     {
         audioSource.PlayOneShot(collectedAudioClip);
         gameObject.GetComponent<MeshRenderer>().enabled = false;
-        StartCoroutine(OnCollect());
+        StartCoroutine(OnCollectGem());
+
+        OnCollected?.Invoke();
     }
 
     private void Rotate()
@@ -54,9 +57,19 @@ public class Gem : MonoBehaviour
         transform.Rotate(0, rotationSpeed * Time.deltaTime, 0 );
     }
 
-    private IEnumerator OnCollect()
+    private void AnimateGem()
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Append(transform.DOLocalMove(endPosition, liftTime));
+        sequence.Append(transform.DOLocalMove(startPosition, liftTime));
+        sequence.SetLoops(-1);
+    }
+
+    private IEnumerator OnCollectGem()
     {
         yield return new WaitForSeconds(1f);
+        gameObject.GetComponent<MeshRenderer>().enabled = true;
         gameObject.SetActive(false);
     }
 

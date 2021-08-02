@@ -12,28 +12,27 @@ public class Platform : MonoBehaviour
     [SerializeField] private int vibrationRandomness;
 
     private Vector3 startPosition;
-    private bool isTaken;
 
     private void Awake()
     {
         startPosition = transform.position;
     }
 
+    private void OnEnable()
+    {
+        GameOver.OnGameOver += GameOver_OnGameOver;
+    }
+
+    private void OnDisable()
+    {
+        GameOver.OnGameOver -= GameOver_OnGameOver;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Player))
         {
-            isTaken = true;
-            //StartCoroutine(OnPlatformLeave());
             DropPlatform();
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag(Tags.Player))
-        {
-            isTaken = false;
         }
     }
 
@@ -49,14 +48,9 @@ public class Platform : MonoBehaviour
 
     }
 
-    private IEnumerator OnPlatformLeave()
+    private void GameOver_OnGameOver()
     {
-        yield return new WaitForSeconds(timeDelay);
-        if (isTaken)
-        {
-            var player =FindObjectOfType<Player>();
-            player.SetPlayerDead();
-        }
+        gameObject.transform.position = startPosition;
     }
 
 

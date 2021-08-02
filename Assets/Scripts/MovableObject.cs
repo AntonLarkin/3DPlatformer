@@ -22,6 +22,17 @@ public class MovableObject : MonoBehaviour
         startPosition = transform.position;
     }
 
+    private void OnEnable()
+    {
+        GameOver.OnGameOver += GameOver_OnGameOver;
+    }
+
+    private void OnDisable()
+    {
+        GameOver.OnGameOver -= GameOver_OnGameOver;
+
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Player)) 
@@ -41,5 +52,10 @@ public class MovableObject : MonoBehaviour
         sequence.Append(transform.DOLocalMove(position, liftTime));
     }
 
+    private void GameOver_OnGameOver()
+    {
+        gameObject.transform.position = startPosition;
+        //DOTween.KillAll();
+    }
 
 }
