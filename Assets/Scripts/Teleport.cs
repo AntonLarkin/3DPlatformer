@@ -4,22 +4,36 @@ using UnityEngine;
 
 public class Teleport : MonoBehaviour
 {
-    [SerializeField] private Vector3 teleportPosition;
+    [SerializeField] private Teleport destinationTeleport;
 
+    private Vector3 teleportPosition;
     private Player player;
 
     private void Start()
     {
         player = FindObjectOfType<Player>();
+
         
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Player))
         {
-            Debug.Log(teleportPosition);
-            player.TeleportPlayer(teleportPosition);
+            player.TeleportPlayer(SetTeleportPosition());
+            destinationTeleport.GetComponent<BoxCollider>().enabled = false;
+            StartCoroutine(OnEnter());
+            
         }
     }
 
+    private Vector3 SetTeleportPosition()
+    {
+        return teleportPosition = destinationTeleport.transform.position;
+    }
+
+    private IEnumerator OnEnter()
+    {
+        yield return new WaitForSeconds(3f);
+        destinationTeleport.GetComponent<BoxCollider>().enabled = true;
+    }
 }

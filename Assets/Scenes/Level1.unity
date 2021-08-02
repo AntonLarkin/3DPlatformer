@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e88891b19ab074e47be2c2b079c98403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportPosition: {x: 9, y: 5.52, z: -33}
+  destinationTeleport: {fileID: 1400729737}
 --- !u!850595691 &201998402
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -10850,7 +10850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e88891b19ab074e47be2c2b079c98403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportPosition: {x: 0, y: 2, z: 0}
+  destinationTeleport: {fileID: 152674934}
 --- !u!4 &1400729743 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2933757287522466698, guid: 158f193661121dd4692e15c6bc39e16c, type: 3}
@@ -19443,7 +19443,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh16524
+  m_Name: pb_Mesh16522
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
